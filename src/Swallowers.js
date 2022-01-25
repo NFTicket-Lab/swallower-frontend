@@ -4,7 +4,7 @@ import { Form, Grid } from 'semantic-ui-react';
 import { useSubstrate } from './substrate-lib';
 import { TxButton } from './substrate-lib/components';
 
-import KittyCards from './KittyCards';
+import SwallowerCards from './SwallowerCards';
 
 const convertToSwallowerHash = entry =>
   `0x${entry[0].toJSON().slice(-64)}`;
@@ -17,13 +17,20 @@ const constructKitty = (hash, { name, initGene, gene, owner }) => ({
   owner: owner.toJSON()
 });
 
-export default function Kitties (props) {
+export default function Kitties(props) {
   const { api, keyring } = useSubstrate();
   const { accountPair } = props;
 
   const [swallowerHashes, setSwallowerHashes] = useState([]);
   const [swallowers, setSwallowers] = useState([]);
   const [status, setStatus] = useState('');
+  const [formValue, setFormValue] = React.useState({});
+
+  const formChange = key => {
+    return (ev, el) => {
+      setFormValue({ ...formValue, [key]: el.value });
+    };
+  }
 
   const subscribeSwallowerCnt = () => {
     let unsub = null;
@@ -65,17 +72,18 @@ export default function Kitties (props) {
   useEffect(subscribeSwallowerCnt, [api, keyring]);
 
   return <Grid.Column width={16}>
-  <h1>Swallowers</h1>
-  <KittyCards kitties={swallowers} accountPair={accountPair} setStatus={setStatus}/>
-  <Form style={{ margin: '1em 0' }}>
+    <h1>Swallowers</h1>
+    <SwallowerCards swallowers={swallowers} accountPair={accountPair} setStatus={setStatus} />
+    <Form style={{ margin: '1em 0' }}>
+      <Form.Input placeholder="please input swallower name" onChange={formChange('target')} />
       <Form.Field style={{ textAlign: 'center' }}>
         <TxButton
           accountPair={accountPair} label='Create Swallower' type='SIGNED-TX' setStatus={setStatus}
           attrs={{
             palletRpc: 'swallower',
             callable: 'mintSwallower',
-            inputParams: ['abc54341'],
-            paramFields: ['name']
+            inputParams: [formValue.target],
+            paramFields: [true]
           }}
         />
       </Form.Field>

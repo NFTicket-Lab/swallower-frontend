@@ -157,11 +157,18 @@ const BreedKitty = props => {
 
 // --- About Kitty Card ---
 
-const KittyCard = props => {
-  const { kitty, accountPair, setStatus } = props;
-  const { id = null, dna = null, owner = null, gender = null, price = null } = kitty;
+const SwallowerCard = props => {
+  const { swallower, accountPair, setStatus } = props;
+
+  // id: hash,
+  // dna: gene,
+  // initGene: initGene.toJSON(),
+  // name,
+  // owner: owner.toJSON()
+  const { id = null, dna = null, initGene = null, name = null, owner = null } = swallower;
   const displayDna = dna && dna.toJSON();
-  const isSelf = accountPair.address === kitty.owner;
+  const displayName = name && name.toU8a();
+  const isSelf = accountPair.address === swallower.owner;
 
   return <Card>
     { isSelf && <Label as='a' floating color='teal'>Mine</Label> }
@@ -175,42 +182,42 @@ const KittyCard = props => {
       </Card.Meta>
       <Card.Description>
         <p style={{ overflowWrap: 'break-word' }}>
-          Gender: {gender}
+          initGene: {initGene}
+        </p>
+        <p style={{ overflowWrap: 'break-word' }}>
+          name: {displayName}
         </p>
         <p style={{ overflowWrap: 'break-word' }}>
           Owner: {owner}
-        </p>
-        <p style={{ overflowWrap: 'break-word' }}>
-          Price: {price}
         </p>
       </Card.Description>
     </Card.Content>
     <Card.Content extra style={{ textAlign: 'center' }}>{ owner === accountPair.address
       ? <>
-          <SetPrice kitty={kitty} accountPair={accountPair} setStatus={setStatus}/>
-          <TransferModal kitty={kitty} accountPair={accountPair} setStatus={setStatus}/>
-          <BreedKitty kitty={kitty} accountPair={accountPair} setStatus={setStatus}/>
+          <SetPrice kitty={swallower} accountPair={accountPair} setStatus={setStatus}/>
+          <TransferModal kitty={swallower} accountPair={accountPair} setStatus={setStatus}/>
+          <BreedKitty kitty={swallower} accountPair={accountPair} setStatus={setStatus}/>
           
         </>
-      : <BuyKitty kitty={kitty} accountPair={accountPair} setStatus={setStatus}/>
+      : <BuyKitty kitty={swallower} accountPair={accountPair} setStatus={setStatus}/>
     }</Card.Content>
   </Card>;
 };
 
 const KittyCards = props => {
-  const { kitties, accountPair, setStatus } = props;
+  const { swallowers, accountPair, setStatus } = props;
 
-  if (kitties.length === 0) {
+  if (swallowers.length === 0) {
     return <Message info>
-      <Message.Header>No Kitty found here... Create one now!&nbsp;
+      <Message.Header>No Swallower found here... Create one now!&nbsp;
         <span role='img' aria-label='point-down'>👇</span>
       </Message.Header>
     </Message>;
   }
 
-  return <Grid columns={3}>{kitties.map((kitty, i) =>
-    <Grid.Column key={`kitty-${i}`}>
-      <KittyCard kitty={kitty} accountPair={accountPair} setStatus={setStatus}/>
+  return <Grid columns={3}>{swallowers.map((swallower, i) =>
+    <Grid.Column key={`swallower-${i}`}>
+      <SwallowerCard swallower={swallower} accountPair={accountPair} setStatus={setStatus}/>
     </Grid.Column>
   )}</Grid>;
 };
