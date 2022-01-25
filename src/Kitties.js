@@ -6,7 +6,7 @@ import { TxButton } from './substrate-lib/components';
 
 import KittyCards from './KittyCards';
 
-const convertToKittyHash = entry =>
+const convertToSwallowerHash = entry =>
   `0x${entry[0].toJSON().slice(-64)}`;
 
 const constructKitty = (hash, { dna, price, gender, owner }) => ({
@@ -21,19 +21,19 @@ export default function Kitties (props) {
   const { api, keyring } = useSubstrate();
   const { accountPair } = props;
 
-  const [kittyHashes, setKittyHashes] = useState([]);
+  const [swallowerHashes, setSwallowerHashes] = useState([]);
   const [kitties, setKitties] = useState([]);
   const [status, setStatus] = useState('');
 
-  const subscribeKittyCnt = () => {
+  const subscribeSwallowerCnt = () => {
     let unsub = null;
 
     const asyncFetch = async () => {
-      unsub = await api.query.substrateKitties.kittyCnt(async cnt => {
+      unsub = await api.query.palletSwallower.swallowerNo(async cnt => {
         // Fetch all kitty keys
-        const entries = await api.query.substrateKitties.kitties.entries();
-        const hashes = entries.map(convertToKittyHash);
-        setKittyHashes(hashes);
+        const entries = await api.query.palletSwallower.swallowers.entries();
+        const hashes = entries.map(convertToSwallowerHash);
+        setSwallowerHashes(hashes);
       });
     };
 
@@ -48,9 +48,9 @@ export default function Kitties (props) {
     let unsub = null;
 
     const asyncFetch = async () => {
-      unsub = await api.query.substrateKitties.kitties.multi(kittyHashes, kitties => {
+      unsub = await api.query.substrateKitties.kitties.multi(swallowerHashes, kitties => {
         const kittyArr = kitties
-          .map((kitty, ind) => constructKitty(kittyHashes[ind], kitty.value));
+          .map((kitty, ind) => constructKitty(swallowerHashes[ind], kitty.value));
         setKitties(kittyArr);
       });
     };
@@ -63,8 +63,8 @@ export default function Kitties (props) {
     };
   };
 
-  useEffect(subscribeKitties, [api, kittyHashes]);
-  useEffect(subscribeKittyCnt, [api, keyring]);
+  useEffect(subscribeKitties, [api, swallowerHashes]);
+  useEffect(subscribeSwallowerCnt, [api, keyring]);
 
   return <Grid.Column width={16}>
   <h1>Kitties</h1>
