@@ -15,7 +15,7 @@ import NodeInfo from './NodeInfo';
 import TemplateModule from './TemplateModule';
 import Transfer from './Transfer';
 import Upgrade from './Upgrade';
-import Kitties from './Kitties';
+import Swallowers from './Swallowers';
 
 function Main () {
   const [accountAddress, setAccountAddress] = useState(null);
@@ -63,7 +63,7 @@ function Main () {
             <BlockNumber finalized />
           </Grid.Row>
           <Grid.Row>
-            <Kitties accountPair={accountPair} />
+            <Swallowers accountPair={accountPair} />
           </Grid.Row>
           <Grid.Row stretched>
             <Balances />

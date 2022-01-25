@@ -9,11 +9,11 @@ import KittyCards from './KittyCards';
 const convertToSwallowerHash = entry =>
   `0x${entry[0].toJSON().slice(-64)}`;
 
-const constructKitty = (hash, { dna, price, gender, owner }) => ({
+const constructKitty = (hash, { name, initGene, gene, owner }) => ({
   id: hash,
-  dna,
-  price: price.toJSON(),
-  gender: gender.toJSON(),
+  dna: gene,
+  initGene: initGene.toJSON(),
+  name,
   owner: owner.toJSON()
 });
 
@@ -22,16 +22,16 @@ export default function Kitties (props) {
   const { accountPair } = props;
 
   const [swallowerHashes, setSwallowerHashes] = useState([]);
-  const [kitties, setKitties] = useState([]);
+  const [swallowers, setSwallowers] = useState([]);
   const [status, setStatus] = useState('');
 
   const subscribeSwallowerCnt = () => {
     let unsub = null;
 
     const asyncFetch = async () => {
-      unsub = await api.query.palletSwallower.swallowerNo(async cnt => {
+      unsub = await api.query.swallower.swallowerNo(async cnt => {
         // Fetch all kitty keys
-        const entries = await api.query.palletSwallower.swallowers.entries();
+        const entries = await api.query.swallower.swallowers.entries();
         const hashes = entries.map(convertToSwallowerHash);
         setSwallowerHashes(hashes);
       });
@@ -44,40 +44,38 @@ export default function Kitties (props) {
     };
   };
 
-  const subscribeKitties = () => {
+  const subscribeSwallowers = () => {
     let unsub = null;
 
     const asyncFetch = async () => {
-      unsub = await api.query.substrateKitties.kitties.multi(swallowerHashes, kitties => {
-        const kittyArr = kitties
-          .map((kitty, ind) => constructKitty(swallowerHashes[ind], kitty.value));
-        setKitties(kittyArr);
+      unsub = await api.query.swallower.swallowers.multi(swallowerHashes, swallowers => {
+        const swallowerArr = swallowers
+          .map((swallower, ind) => constructKitty(swallowerHashes[ind], swallower.value));
+        setSwallowers(swallowerArr);
       });
     };
-
     asyncFetch();
-
     // return the unsubscription cleanup function
     return () => {
       unsub && unsub();
     };
   };
 
-  useEffect(subscribeKitties, [api, swallowerHashes]);
+  useEffect(subscribeSwallowers, [api, swallowerHashes]);
   useEffect(subscribeSwallowerCnt, [api, keyring]);
 
   return <Grid.Column width={16}>
-  <h1>Kitties</h1>
-  <KittyCards kitties={kitties} accountPair={accountPair} setStatus={setStatus}/>
+  <h1>Swallowers</h1>
+  <KittyCards kitties={swallowers} accountPair={accountPair} setStatus={setStatus}/>
   <Form style={{ margin: '1em 0' }}>
       <Form.Field style={{ textAlign: 'center' }}>
         <TxButton
-          accountPair={accountPair} label='Create Kitty' type='SIGNED-TX' setStatus={setStatus}
+          accountPair={accountPair} label='Create Swallower' type='SIGNED-TX' setStatus={setStatus}
           attrs={{
-            palletRpc: 'substrateKitties',
-            callable: 'createKitty',
-            inputParams: [],
-            paramFields: []
+            palletRpc: 'swallower',
+            callable: 'mintSwallower',
+            inputParams: ['abc54341'],
+            paramFields: ['name']
           }}
         />
       </Form.Field>
