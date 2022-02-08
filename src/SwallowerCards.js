@@ -167,12 +167,13 @@ const SwallowerCard = props => {
   // owner: owner.toJSON()
   const { id = null, dna = null, initGene = null, name = null, owner = null } = swallower;
   const displayDna = dna && dna.toJSON();
-  const displayName = name && name.toU8a();
+  const displayName = name && name.toHuman();
   const isSelf = accountPair.address === swallower.owner;
 
   return <Card>
     { isSelf && <Label as='a' floating color='teal'>Mine</Label> }
-    <KittyAvatar dna={dna.toU8a()} />
+    <KittyAvatar dna={dna} />
+    {/* <KittyAvatar dna={dna.toU8a()} /> */}
     <Card.Content>
       <Card.Header style={{ fontSize: '1em', overflowWrap: 'break-word' }}>
         ID: {id}
